@@ -276,7 +276,7 @@ static int parse_color_moved(const char *arg)
 	else if (!strcmp(arg, "dimmed_zebra"))
 		return COLOR_MOVED_ZEBRA_DIM;
 	else
-		return -1;
+		return error(_("color moved setting must be one of 'default', 'plain', 'zebra', 'dimmed_zebra'"));
 }
 
 int git_diff_ui_config(const char *var, const char *value, void *cb)
