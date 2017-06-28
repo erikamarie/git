@@ -192,6 +192,7 @@ struct diff_options {
 		COLOR_MOVED_NO = 0,
 		COLOR_MOVED_PLAIN = 1,
 		COLOR_MOVED_ZEBRA = 2,
+		COLOR_MOVED_DEFAULT = 2,
 		COLOR_MOVED_ZEBRA_DIM = 3,
 	} color_moved;
 };

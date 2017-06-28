@@ -256,12 +256,23 @@ int git_diff_heuristic_config(const char *var, const char *value, void *cb)
 
 static int parse_color_moved(const char *arg)
 {
+	int v = git_parse_maybe_bool(arg);
+
+	if (v != -1) {
+		if (v == 0)
+			return COLOR_MOVED_NO;
+		else if (v == 1)
+			return COLOR_MOVED_DEFAULT;
+	}
+
 	if (!strcmp(arg, "no"))
 		return COLOR_MOVED_NO;
 	else if (!strcmp(arg, "plain"))
 		return COLOR_MOVED_PLAIN;
 	else if (!strcmp(arg, "zebra"))
 		return COLOR_MOVED_ZEBRA;
+	else if (!strcmp(arg, "default"))
+		return COLOR_MOVED_DEFAULT;
 	else if (!strcmp(arg, "dimmed_zebra"))
 		return COLOR_MOVED_ZEBRA_DIM;
 	else
@@ -4654,7 +4665,7 @@ int diff_opt_parse(struct diff_options *options,
 		if (diff_color_moved_default)
 			options->color_moved = diff_color_moved_default;
 		if (options->color_moved == COLOR_MOVED_NO)
-			options->color_moved = COLOR_MOVED_ZEBRA_DIM;
+			options->color_moved = COLOR_MOVED_DEFAULT;
 	} else if (!strcmp(arg, "--no-color-moved"))
 		options->color_moved = COLOR_MOVED_NO;
 	else if (skip_prefix(arg, "--color-moved=", &arg)) {

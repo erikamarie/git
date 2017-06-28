@@ -243,6 +243,9 @@ endif::git-diff[]
 --
 no::
 	Moved lines are not highlighted.
+default::
+	Is a synonym for `zebra`. This may change to more sensible modes
+	in the future.
 plain::
 	Any line that is added in one location and was removed
 	in another location will be colored with 'color.diff.newMoved'.
