@@ -195,6 +195,7 @@ struct diff_options {
 		COLOR_MOVED_DEFAULT = 2,
 		COLOR_MOVED_ZEBRA_DIM = 3,
 	} color_moved;
+	#define COLOR_MOVED_MIN_BLOCK_LENGTH 3
 };
 
 void diff_emit_submodule_del(struct diff_options *o, const char *line);

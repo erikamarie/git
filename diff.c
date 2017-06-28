@@ -853,7 +853,8 @@ static void mark_color_as_moved(struct diff_options *o,
 {
 	struct moved_entry **pmb = NULL; /* potentially moved blocks */
 	int pmb_nr = 0, pmb_alloc = 0;
-	int n, flipped_block = 1;
+	int n, flipped_block = 1, block_length = 0;
+
 
 	for (n = 0; n < o->emitted_symbols->nr; n++) {
 		struct hashmap *hm = NULL;
@@ -880,11 +881,19 @@ static void mark_color_as_moved(struct diff_options *o,
 		}
 
 		if (!match) {
+			if (block_length < COLOR_MOVED_MIN_BLOCK_LENGTH) {
+				for (i = 0; i < block_length + 1; i++) {
+					l = &o->emitted_symbols->buf[n - i];
+					l->flags &= ~DIFF_SYMBOL_MOVED_LINE;
+				}
+			}
 			pmb_nr = 0;
+			block_length = 0;
 			continue;
 		}
 
 		l->flags |= DIFF_SYMBOL_MOVED_LINE;
+		block_length++;
 
 		if (o->color_moved == COLOR_MOVED_PLAIN)
 			continue;
