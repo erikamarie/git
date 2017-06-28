@@ -808,6 +808,33 @@ static void add_lines_to_move_detection(struct diff_options *o,
 	}
 }
 
+static int shrink_potential_moved_blocks(struct moved_entry **pmb,
+					 int pmb_nr)
+{
+	int lp, rp;
+
+	/* Shrink the set of potential block to the remaining running */
+	for (lp = 0, rp = pmb_nr - 1; lp <= rp;) {
+		while (lp < pmb_nr && pmb[lp])
+			lp++;
+		/* lp points at the first NULL now */
+
+		while (rp > -1 && !pmb[rp])
+			rp--;
+		/* rp points at the last non-NULL */
+
+		if (lp < pmb_nr && rp > -1 && lp < rp) {
+			pmb[lp] = pmb[rp];
+			pmb[rp] = NULL;
+			rp--;
+			lp++;
+		}
+	}
+
+	/* Remember the number of running sets */
+	return rp + 1;
+}
+
 /* Find blocks of moved code, delegate actual coloring decision to helper */
 static void mark_color_as_moved(struct diff_options *o,
 				struct hashmap *add_lines,
@@ -822,7 +849,7 @@ static void mark_color_as_moved(struct diff_options *o,
 		struct moved_entry *key;
 		struct moved_entry *match = NULL;
 		struct emitted_diff_symbol *l = &o->emitted_symbols->buf[n];
-		int i, lp, rp;
+		int i;
 
 		switch (l->s) {
 		case DIFF_SYMBOL_PLUS:
@@ -864,26 +891,7 @@ static void mark_color_as_moved(struct diff_options *o,
 			}
 		}
 
-		/* Shrink the set of potential block to the remaining running */
-		for (lp = 0, rp = pmb_nr - 1; lp <= rp;) {
-			while (lp < pmb_nr && pmb[lp])
-				lp++;
-			/* lp points at the first NULL now */
-
-			while (rp > -1 && !pmb[rp])
-				rp--;
-			/* rp points at the last non-NULL */
-
-			if (lp < pmb_nr && rp > -1 && lp < rp) {
-				pmb[lp] = pmb[rp];
-				pmb[rp] = NULL;
-				rp--;
-				lp++;
-			}
-		}
-
-		/* Remember the number of running sets */
-		pmb_nr = rp + 1;
+		pmb_nr = shrink_potential_moved_blocks(pmb, pmb_nr);
 
 		if (pmb_nr == 0) {
 			/*
