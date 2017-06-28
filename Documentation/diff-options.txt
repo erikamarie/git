@@ -252,9 +252,10 @@ plain::
 	Similarly 'color.diff.oldMoved' will be used for removed lines
 	that are added somewhere else in the diff.
 zebra::
-	Blocks of moved code are detected. The detected blocks are
-	painted using the 'color.diff.{old,new}Moved' alternating with
-	'color.diff.{old,new}MovedAlternative'.
+	Blocks of moved code are detected greedily. The detected blocks are
+	painted using either the 'color.diff.{old,new}Moved' color or
+	'color.diff.{old,new}MovedAlternative'. The change between
+	the two colors indicates that a new block was detected.
 dimmed_zebra::
 	Similar to 'zebra', but additional dimming of uninteresting parts
 	of moved code is performed. The bordering lines of two adjacent

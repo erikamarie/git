@@ -1052,8 +1052,10 @@ This does not affect linkgit:git-format-patch[1] or the
 command line with the `--color[=<when>]` option.
 
 diff.colorMoved::
-	If set moved lines in a diff are colored differently,
-	for details see '--color-moved' in linkgit:git-diff[1].
+	If set to either a valid `<mode>` or a true value, moved lines
+	in a diff are colored differently, for details of valid modes
+	see '--color-moved' in linkgit:git-diff[1]. If simply set to
+	true the default color mode will be used.
 
 color.diff.<slot>::
 	Use customized color for diff colorization.  `<slot>` specifies
