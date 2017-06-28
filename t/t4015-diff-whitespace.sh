@@ -1317,6 +1317,71 @@ test_expect_success 'no effect from --color-moved with --word-diff' '
 	test_cmp expect actual
 '
 
+test_expect_success 'move detection ignoring whitespace ' '
+	git reset --hard &&
+	cat <<\EOF >lines.txt &&
+line 1
+line 2
+line 3
+line 4
+line 5
+line 6
+line 7
+EOF
+	git add lines.txt &&
+	git commit -m "add poetry" &&
+	cat <<\EOF >lines.txt &&
+	line 5
+	line 6
+	line 7
+line 1
+line 2
+line 3
+line 4
+EOF
+	test_config color.diff.oldMoved "magenta" &&
+	test_config color.diff.newMoved "cyan" &&
+	git diff HEAD --no-renames --color-moved| test_decode_color >actual &&
+	cat <<-\EOF >expected &&
+	<BOLD>diff --git a/lines.txt b/lines.txt<RESET>
+	<BOLD>index 734156d..eb89ead 100644<RESET>
+	<BOLD>--- a/lines.txt<RESET>
+	<BOLD>+++ b/lines.txt<RESET>
+	<CYAN>@@ -1,7 +1,7 @@<RESET>
+	<GREEN>+<RESET>	<GREEN>line 5<RESET>
+	<GREEN>+<RESET>	<GREEN>line 6<RESET>
+	<GREEN>+<RESET>	<GREEN>line 7<RESET>
+	 line 1<RESET>
+	 line 2<RESET>
+	 line 3<RESET>
+	 line 4<RESET>
+	<RED>-line 5<RESET>
+	<RED>-line 6<RESET>
+	<RED>-line 7<RESET>
+	EOF
+	test_cmp expected actual &&
+
+	git diff HEAD --no-renames -w --color-moved| test_decode_color >actual &&
+	cat <<-\EOF >expected &&
+	<BOLD>diff --git a/lines.txt b/lines.txt<RESET>
+	<BOLD>index 734156d..eb89ead 100644<RESET>
+	<BOLD>--- a/lines.txt<RESET>
+	<BOLD>+++ b/lines.txt<RESET>
+	<CYAN>@@ -1,7 +1,7 @@<RESET>
+	<CYAN>+<RESET>	<CYAN>line 5<RESET>
+	<CYAN>+<RESET>	<CYAN>line 6<RESET>
+	<CYAN>+<RESET>	<CYAN>line 7<RESET>
+	 line 1<RESET>
+	 line 2<RESET>
+	 line 3<RESET>
+	 line 4<RESET>
+	<MAGENTA>-line 5<RESET>
+	<MAGENTA>-line 6<RESET>
+	<MAGENTA>-line 7<RESET>
+	EOF
+	test_cmp expected actual
+'
+
 test_expect_success 'move detection with submodules' '
 	test_create_repo bananas &&
 	echo ripe >bananas/recipe &&

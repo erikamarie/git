@@ -903,8 +903,7 @@ static void mark_color_as_moved(struct diff_options *o,
 			struct moved_entry *p = pmb[i];
 			struct moved_entry *pnext = (p && p->next_line) ?
 					p->next_line : NULL;
-			if (pnext &&
-			    !emitted_symbol_cmp(pnext->es, l, o)) {
+			if (pnext && !hm->cmpfn(pnext, match, NULL)) {
 				pmb[i] = p->next_line;
 			} else {
 				pmb[i] = NULL;
